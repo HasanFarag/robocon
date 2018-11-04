@@ -21,10 +21,13 @@ Expander. This uses I2C to communicate with the Raspberry Pi.
 Laser rangefinder for target distance uses I2C or PWM input
 (could use an interrupt pin for this).
 
-Main drive motors require 2 GPIO and 2 PWM.
+Main drive motors each require 2 GPIO for forward reverse
+and 2 PWM speed signals also 2 or 1 GPIO for inhibits.
 Wheel Speed sensors 2 GPIO
 
 Possibly need a motor for cannon charge system. 1 GPIO or PWM
+
+GPIO Count
 
 """
 class Board:
