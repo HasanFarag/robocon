@@ -1,4 +1,7 @@
-"""Functions to help interface with harware
+"""Library file for rover Hardware.
+
+Created by Bill Crawford <bill.crawford@forthvalley.ac.uk>
+
 Processor       : ARMv6-compatible processor rev 7 (v6l)
 BogoMIPS        : 847.05
 Features        : swp half thumb fastmult vfp edsp java tls
@@ -30,64 +33,84 @@ Possibly need a motor for cannon charge system. 1 GPIO or PWM
 GPIO Count
 
 """
+
+
 class Board:
+    """Docstring."""
 
     def __init__(self):
+        """Init."""
         self._boardInfo = {}
         self.overclocked = False
         self._piInfo()
 
-    def type():
-        """
-        """
-        if 'revision' in self._boardInfo:
-            rev = self._boardInfo['revision']
-            if rev[0:2] = '100':
+    def type(self):
+        """Type of board."""
+        rev = []
+        for key, value in self._boardInfo.items():
+            if key == 'revision':
+                rev = value
+            if rev[0:2] == '100':
                 self.overclocked = True
+        return
 
     def _readFile(self, filePath):
+        """Docstring."""
         try:
-            infoFile = open(filePath,'r')
+            infoFile = open(filePath, 'r')
             infoLines = infoFile.readlines().strip()
             infoFile.close()
         except Exception as e:
-            #TODO log error
+            # TODO log error
             return None
         return infoLines
 
     def _piInfo(self):
+        """Docstring."""
         infolines = self._readFile('/proc/device-tree/model')
         if infolines:
             self.model = infolines.strip()
         infolines = self._readFile('/proc/cpuinfo')
         if infolines:
             for infoline in infolines:
-                if infoLine.find(:) > 0:
-                    delimiter = infoLine.find(:)
-                    key = infoLine[0:delimiter-1].strip().lower()
-                    value = infoLine[delimiter+1:].strip().lower()
+                if infoline.find(':') > 0:
+                    delimiter = infoline.find(':')
+                    key = infoline[0:delimiter-1].strip().lower()
+                    value = infoline[delimiter+1:].strip().lower()
                     self._boardInfo[key] = value
-        if not self.model:
-            #TODO extract the board model
+        if self.model is None:
+            # TODO extract the board model
             pass
         return
 
+
+class PortExpander:
+    """Port Expander."""
+    def __init__(self, address,
+                 dataDirectionsA=0, dataDirectionsB=0
+                 ):
+        self.address = address
+        self.dataDirectionsA = dataDirectionsA
+        self.dataDirectionsB = dataDirectionsB
+
+
 class StepperMotor:
-    """26DBMXXD1U-L Stepper Motor Control
+    """26DBMXXD1U-L Stepper Motor Control.
+
     The 26DBMXXD1U-L is a 5 volt unipolar stepper motor with
     48 steps per revolution (7.5 degrees per step).
+
+    TODO - Disuss mechanism with Mech Eng.
     """
+
     def __init__(self):
+        """Stepper Motor Initialisation."""
         self.model = '26DBMXXD1U-L'
         self.mode = 'unipolar'
-        #Sequence based on wiring of pins in the order
-        #yellow, orange, brown, black
-        #red and green assumed to be connected to 5v
-        self.sequence = [[1,0,0,1],
-                         [1,0,0,0],
-                         [1,1,0,0],
-                         [0,1,0,0],
-                         [0,1,1,0],
-                         [0,0,1,0],
-                         [0,0,1,1],
-                         [0,0,0,1]]
+        # Sequence based on wiring of pins in the order
+        # yellow, orange, brown, black
+        # red and green assumed to be connected to 5v
+        self.sequence = [[1, 0, 1, 0],
+                         [1, 0, 0, 1],
+                         [0, 1, 0, 1],
+                         [0, 1, 1, 0]]
