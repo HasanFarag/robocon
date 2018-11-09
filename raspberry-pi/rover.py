@@ -14,3 +14,7 @@ class Rover:
 
     # TODO Methods. What are the actions the rover has to be able
     # to perform?
+	
+	def moveForwards():
+		#TODO
+		pass
