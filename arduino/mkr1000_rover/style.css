@@ -1,0 +1,13 @@
+#speed-bar {
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+	width: 20px;
+    height: 500px;
+}
+
+#direction-bar {
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+	width: 20px;
+    height: 500px;
+}
