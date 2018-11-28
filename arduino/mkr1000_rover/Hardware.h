@@ -1,7 +1,7 @@
 /*
   hardware.h - Library file for rover hardware
   Created by Bill Crawford <bill.crawford@forthvalley.ac.uk>
-  Stepper motor requires 4 GPIO pins
+  Stepper motor requires 4 GPIO pins and we need two.
 
   For the Utrasonic sensors we will connect to a MCP23017A Port
   Expander. This uses I2C to communicate with the Raspberry Pi.
@@ -22,5 +22,16 @@
 #ifndef hardware_h
 #define hardware_h
 
+class PortExpander
+{
+  public:
+    PortExpander(int );
+};
 
+class StepperMotor
+{
+  public:
+    StepperMotor(int pinA, int pinB);
+
+};
 #endif
