@@ -223,7 +223,6 @@ boolean RoverControl::isMaze(void){
 }
 void RoverControl::interface(void){
   WiFiClient client = server.available();
-  WiFiClient* clientPtr = &client;
   if(!mazeMode or !remoteMode){
     select(client);
   }
@@ -286,15 +285,15 @@ void RoverControl::select(WiFiClient client){
         if (readString.indexOf("?maze") > 0){
           mazeMode = true;
           remoteMode = false;
-          // Clear the readString to be able to get the next command
-          readString = "";
+          readString = ""
+          mazeInterface(client);
         }
         // Remote Mode button
         if (readString.indexOf("?remote") > 0){
           mazeMode = false;
           remoteMode = true;
-          // Clear the readString to be able to get the next command
-          readString = "";
+          readString = ""
+          remoteInterface(client);
         }
       }
     }
