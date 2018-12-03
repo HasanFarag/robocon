@@ -4,7 +4,7 @@
 
 
 Wireless wireless;
-
+RoverControl control;
 void setup() {
   Serial.begin(9600);
   if(!Serial) {
@@ -36,6 +36,10 @@ void loop() {
   }
   else if(!wireless.isConnected()){
     wireless.connectWifi();
+  }
+
+  if(wireless.isConnected()){
+    control.interface();
   }
 
 

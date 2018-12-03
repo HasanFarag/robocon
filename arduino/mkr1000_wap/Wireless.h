@@ -24,4 +24,22 @@ private:
   boolean readingPassword;
   boolean WiFiConnected;
 };
+
+class RoverControl{
+public:
+  RoverControl();
+  //void select(void);
+  void interface(void);
+private:
+  boolean mazeMode;
+  boolean remoteMode;
+  boolean readingCommand;
+  String readString;
+  boolean isNone(void);
+  boolean isRemote(void);
+  boolean isMaze(void);
+  void select(WiFiClient client);
+  void mazeInterface(WiFiClient client);
+  void remoteInterface(WiFiClient client);
+};
 #endif

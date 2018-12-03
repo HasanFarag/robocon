@@ -168,7 +168,8 @@ void Wireless::connectWifi(void) {
     printWiFiStatus();
   }
   WiFiConnected = true;
-  delay(1000);
+  server.begin();
+  //delay(1000);
 }
 
 void Wireless::printWiFiStatus(void) {
@@ -193,4 +194,263 @@ void Wireless::printAPStatus(void) {
   Serial.println(" dBm");
   Serial.print("To connect, open a browser to http://");
   Serial.println(ip);
+}
+
+RoverControl::RoverControl(){
+  mazeMode = false;
+  remoteMode = false;
+  readingCommand =false;
+  readString = "";
+
+}
+boolean RoverControl::isNone(void){
+  if(!mazeMode or !remoteMode){
+    return true;
+  }
+  else {return false;}
+}
+boolean RoverControl::isRemote(void){
+  if(!mazeMode and remoteMode){
+    return true;
+  }
+  else {return false;}
+}
+boolean RoverControl::isMaze(void){
+  if(mazeMode and !remoteMode){
+    return true;
+  }
+  else {return false;}
+}
+void RoverControl::interface(void){
+  WiFiClient client = server.available();
+  WiFiClient* clientPtr = &client;
+  if(!mazeMode or !remoteMode){
+    select(client);
+  }
+  else if(mazeMode and !remoteMode){
+    mazeInterface(client);
+  }
+  else if(!mazeMode and remoteMode){
+    remoteInterface(client);
+  }
+}
+void RoverControl::select(WiFiClient client){
+  if (client) {
+    if(Serial){
+      Serial.println("new client");
+    }
+    String currentLine = "";
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        if(Serial){
+          Serial.print(c);
+        }
+        if (readString.length() < 100) {
+          //store characters to string
+          readString += c;
+        }
+        if (c == '\n') {
+          client.println("HTTP/1.1 200 OK");
+          //client.println("Connection: Keep-Alive");
+          //client.println("Keep-Alive: timeout=5, max=1000");
+          client.println("Content-type:text/html");
+          client.println();
+          client.println("<html>");
+          client.println("<head>");
+          client.println("<style>");
+          client.println("a.button {-webkit-appearance: button;");
+          client.println("-moz-appearance: button;");
+          client.println("appearance: button;");
+          client.println("height:200px;");
+          client.println("line-height:200px;");
+          client.println("text-align:center;");
+          client.println("text-decoration: none;");
+          client.println("font-size: 50px;");
+          client.println("color: initial;}");
+          client.println("</style>");
+          client.println("<title>Rover Control Menu</title>");
+          client.println("</head>");
+          client.println("<body>");
+          // Button for maze mode
+          client.println("<a href=\"/?maze\" class=\"button\" style=\"width:100%;\"\">MAZE SOLVER</a>");
+          client.println("<br />");
+          client.println("<a href=\"/?remote\" class=\"button\" style=\"width:100%;\"\">REMOTE CONTROL</a>");
+          client.println("</body>");
+          client.println("</html>");
+          client.println();
+          break;
+        }
+        // Decide which button was clicked (if any)
+        // Maze Mode button
+        if (readString.indexOf("?maze") > 0){
+          mazeMode = true;
+          remoteMode = false;
+          // Clear the readString to be able to get the next command
+          readString = "";
+        }
+        // Remote Mode button
+        if (readString.indexOf("?remote") > 0){
+          mazeMode = false;
+          remoteMode = true;
+          // Clear the readString to be able to get the next command
+          readString = "";
+        }
+      }
+    }
+    delay(1);
+    client.stop();
+    if(Serial){
+      Serial.println("client disconnected");
+      Serial.println();
+    }
+  }
+}
+
+void RoverControl::mazeInterface(WiFiClient client){
+  if (client) {
+    if(Serial){
+      Serial.println("new client");
+    }
+    String currentLine = "";
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        if(Serial){
+          Serial.print(c);
+        }
+        if (readString.length() < 100) {
+          //store characters to string
+          readString += c;
+        }
+        if (c == '\n') {
+          client.println("HTTP/1.1 200 OK");
+          client.println("Connection: Keep-Alive");
+          client.println("Keep-Alive: timeout=5, max=1000");
+          client.println("Content-type:text/html");
+          client.println();
+          client.println("<html>");
+          client.println("<head>");
+          client.println("<style>");
+          client.println("a.button {-webkit-appearance: button;");
+          client.println("-moz-appearance: button;");
+          client.println("appearance: button;");
+          client.println("height:200px;");
+          client.println("line-height:200px;");
+          client.println("text-align:center;");
+          client.println("text-decoration: none;");
+          client.println("font-size: 50px;");
+          client.println("color: initial;}");
+          client.println("</style>");
+          client.println("<title>Rover Maze</title>");
+          client.println("</head>");
+          client.println("<body>");
+          client.println("Hello World");
+          // Button for maze mode
+          // client.println("<a href=\"/?maze\" class=\"button\" style=\"width:100%;\"\">MAZE SOLVER</a>");
+          // client.println("<br />");
+          // client.println("<a href=\"/?remote\" class=\"button\" style=\"width:100%;\"\">REMOTE CONTROL</a>");
+          client.println("</body>");
+          client.println("</html>");
+          client.println();
+          break;
+        }
+        // Decide which button was clicked (if any)
+        // Maze Mode button
+        if (readString.indexOf("?fast") > 0){
+          mazeMode = true;
+          remoteMode = false;
+          // Clear the readString to be able to get the next command
+          readString = "";
+        }
+        // Remote Mode button
+        if (readString.indexOf("?slow") > 0){
+          mazeMode = false;
+          remoteMode = true;
+          // Clear the readString to be able to get the next command
+          readString = "";
+        }
+      }
+    }
+    delay(1);
+    client.stop();
+    if(Serial){
+      Serial.println("client disconnected");
+      Serial.println();
+    }
+  }
+}
+
+void RoverControl::remoteInterface(WiFiClient client){
+  if (client) {
+    if(Serial){
+      Serial.println("new client");
+    }
+    String currentLine = "";
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        if(Serial){
+          Serial.print(c);
+        }
+        if (readString.length() < 100) {
+          //store characters to string
+          readString += c;
+        }
+        if (c == '\n') {
+          client.println("HTTP/1.1 200 OK");
+          client.println("Connection: Keep-Alive");
+          client.println("Keep-Alive: timeout=5, max=1000");
+          client.println("Content-type:text/html");
+          client.println();
+          client.println("<html>");
+          client.println("<head>");
+          client.println("<style>");
+          client.println("a.button {-webkit-appearance: button;");
+          client.println("-moz-appearance: button;");
+          client.println("appearance: button;");
+          client.println("height:200px;");
+          client.println("line-height:200px;");
+          client.println("text-align:center;");
+          client.println("text-decoration: none;");
+          client.println("font-size: 50px;");
+          client.println("color: initial;}");
+          client.println("</style>");
+          client.println("<title>Rover Control Interface</title>");
+          client.println("</head>");
+          client.println("<body>");
+          client.println("Hello remote");
+          // Button for maze mode
+          // client.println("<a href=\"/?maze\" class=\"button\" style=\"width:100%;\"\">MAZE SOLVER</a>");
+          // client.println("<br />");
+          // client.println("<a href=\"/?remote\" class=\"button\" style=\"width:100%;\"\">REMOTE CONTROL</a>");
+          client.println("</body>");
+          client.println("</html>");
+          client.println();
+          break;
+        }
+        // Decide which button was clicked (if any)
+        // Maze Mode button
+        if (readString.indexOf("?fast") > 0){
+          mazeMode = true;
+          remoteMode = false;
+          // Clear the readString to be able to get the next command
+          readString = "";
+        }
+        // Remote Mode button
+        if (readString.indexOf("?slow") > 0){
+          mazeMode = false;
+          remoteMode = true;
+          // Clear the readString to be able to get the next command
+          readString = "";
+        }
+      }
+    }
+    delay(1);
+    client.stop();
+    if(Serial){
+      Serial.println("client disconnected");
+      Serial.println();
+    }
+  }
 }
