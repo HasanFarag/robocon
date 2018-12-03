@@ -203,24 +203,7 @@ RoverControl::RoverControl(){
   readString = "";
 
 }
-boolean RoverControl::isNone(void){
-  if(!mazeMode or !remoteMode){
-    return true;
-  }
-  else {return false;}
-}
-boolean RoverControl::isRemote(void){
-  if(!mazeMode and remoteMode){
-    return true;
-  }
-  else {return false;}
-}
-boolean RoverControl::isMaze(void){
-  if(mazeMode and !remoteMode){
-    return true;
-  }
-  else {return false;}
-}
+
 void RoverControl::interface(void){
   WiFiClient client = server.available();
   if(!mazeMode or !remoteMode){
@@ -285,14 +268,14 @@ void RoverControl::select(WiFiClient client){
         if (readString.indexOf("?maze") > 0){
           mazeMode = true;
           remoteMode = false;
-          readString = ""
+          readString = "";
           mazeInterface(client);
         }
         // Remote Mode button
         if (readString.indexOf("?remote") > 0){
           mazeMode = false;
           remoteMode = true;
-          readString = ""
+          readString = "";
           remoteInterface(client);
         }
       }
@@ -346,9 +329,9 @@ void RoverControl::mazeInterface(WiFiClient client){
           client.println("<body>");
           client.println("Hello World");
           // Button for maze mode
-          // client.println("<a href=\"/?maze\" class=\"button\" style=\"width:100%;\"\">MAZE SOLVER</a>");
+          // client.println("<a href=\"/?foward\" class=\"button\" style=\"width:100%;\"\">MAZE SOLVER</a>");
           // client.println("<br />");
-          // client.println("<a href=\"/?remote\" class=\"button\" style=\"width:100%;\"\">REMOTE CONTROL</a>");
+          // client.println("<a href=\"/?left\" class=\"button\" style=\"width:100%;\"\">LEFT</a>");
           client.println("</body>");
           client.println("</html>");
           client.println();
@@ -418,28 +401,41 @@ void RoverControl::remoteInterface(WiFiClient client){
           client.println("<title>Rover Control Interface</title>");
           client.println("</head>");
           client.println("<body>");
-          client.println("Hello remote");
-          // Button for maze mode
-          // client.println("<a href=\"/?maze\" class=\"button\" style=\"width:100%;\"\">MAZE SOLVER</a>");
-          // client.println("<br />");
-          // client.println("<a href=\"/?remote\" class=\"button\" style=\"width:100%;\"\">REMOTE CONTROL</a>");
+          //client.println("Hello remote");
+          // Buttons for remote control.
+          client.println("<a href=\"/?forward\" class=\"button\" style=\"width:100%;\"\">FORWARD</a>");
+          client.println("<br />");
+          client.println("<a href=\"/?left\" class=\"button\" style=\"width:100%;\"\">LEFT</a>");
+          client.println("<a href=\"/?stop\" class=\"button\" style=\"width:100%;\"\">STOP</a>");
+          client.println("<a href=\"/?right\" class=\"button\" style=\"width:100%;\"\">RIGHT</a>");
+          client.println("<br />");
+          client.println("<a href=\"/?reverse\" class=\"button\" style=\"width:100%;\"\">REVERSE</a>");
           client.println("</body>");
           client.println("</html>");
           client.println();
           break;
         }
         // Decide which button was clicked (if any)
-        // Maze Mode button
-        if (readString.indexOf("?fast") > 0){
-          mazeMode = true;
-          remoteMode = false;
+        // Stop button
+        if (readString.indexOf("?stop") > 0){
+          // Clear the readString to be able to get the next command
+          readString = "";
+          //tell rover to stop.
+        }
+        // Remote Mode button
+        if (readString.indexOf("?left") > 0){
           // Clear the readString to be able to get the next command
           readString = "";
         }
-        // Remote Mode button
-        if (readString.indexOf("?slow") > 0){
-          mazeMode = false;
-          remoteMode = true;
+        else if (readString.indexOf("?right") > 0){
+          // Clear the readString to be able to get the next command
+          readString = "";
+        }
+        if (readString.indexOf("?forward") > 0){
+          // Clear the readString to be able to get the next command
+          readString = "";
+        }
+        else if (readString.indexOf("?reverse") > 0){
           // Clear the readString to be able to get the next command
           readString = "";
         }

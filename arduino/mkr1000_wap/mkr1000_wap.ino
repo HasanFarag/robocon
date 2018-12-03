@@ -5,6 +5,7 @@
 
 Wireless wireless;
 RoverControl control;
+
 void setup() {
   Serial.begin(9600);
   if(!Serial) {
@@ -18,13 +19,7 @@ void setup() {
   //initalise ultrasonic sensor array
   //initialise lidar
   //start real time clock
-  //initialise WiFi
-
-
-  //networkSSID = was.ssid()
-  //networkPass = was.pass()
-  //stop wireless access server
-  //start webserver
+   
 
 }
 
@@ -32,10 +27,14 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   if(!wireless.hasCredentials()){
+    //initialise WiFi
     wireless.wifiCredentials();
   }
   else if(!wireless.isConnected()){
+    //stop wireless access server
+    //start webserver
     wireless.connectWifi();
+    //update real time clock
   }
 
   if(wireless.isConnected()){
